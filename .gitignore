@@ -18,6 +18,9 @@ data/*
 *.ducklake
 *.ducklake.wal
 
+# Temporary directory of the sandbox verification script
+.verify-sandbox.*/
+
 # Python and dbt
 .venv/
 __pycache__/

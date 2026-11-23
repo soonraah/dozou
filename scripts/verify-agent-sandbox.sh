@@ -7,7 +7,7 @@ set -u
 cd "$(dirname "$0")/.." || exit 2
 
 failures=0
-link_dir="$(mktemp -d)" || exit 2
+link_dir="$(mktemp -d "$PWD/.verify-sandbox.XXXXXX")" || exit 2
 ln -s "$HOME/.ssh" "$link_dir/ssh"
 
 cleanup() {
