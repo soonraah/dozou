@@ -2,7 +2,6 @@
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true
   },
-  "disableAutoMode": "disable",
   "disableClaudeAiConnectors": true,
   "permissions": {
     "disableBypassPermissionsMode": "disable",
@@ -41,7 +40,16 @@
       "mcp__terminal",
       "mcp__Claude_Browser",
       "mcp__claude-in-chrome",
-      "mcp__scheduled-tasks"
+      "mcp__scheduled-tasks",
+      "Read(~/dozou-data/**)",
+      "Read(./.dlt/secrets.toml)",
+      "Read(./**/.env)",
+      "Read(./**/.env.*)",
+      "Edit(./.git/commondir)",
+      "Edit(./.tool-versions)",
+      "Edit(./.envrc)",
+      "Edit(./.gitleaks.toml)",
+      "Edit(./.gitleaksignore)"
     ]
   },
   "sandbox": {
@@ -52,7 +60,8 @@
     "network": {
       "allowedDomains": [
         "pypi.org",
-        "files.pythonhosted.org"
+        "files.pythonhosted.org",
+        "extensions.duckdb.org"
       ],
       "deniedDomains": [
         "github.com",
@@ -60,7 +69,8 @@
         "githubusercontent.com",
         "*.githubusercontent.com",
         "registry.npmjs.org"
-      ]
+      ],
+      "allowLocalBinding": true
     },
     "credentials": {
       "envVars": [
