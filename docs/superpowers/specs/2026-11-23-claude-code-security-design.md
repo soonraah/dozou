@@ -46,7 +46,7 @@ dozou の開発では、最終的に Claude Code を長時間自律的に動か�
 
 - sandbox を必須にし、sandbox 外での再実行を禁止する。
 - 認証情報の置き場所と 1Password の領域の読み取りを禁止する。
-- `op`、connector、Chrome、built-in browser、Terminal panel、scheduled task、個人用 MCP server を禁止する。
+- `op`、Gmail connector、Chrome、built-in browser、Terminal panel、scheduled task、個人用 MCP server を禁止する。Claude Docs connector は開発で使うため残す。
 - GitHub と npm への Bash の通信を禁止する。push と PR 作成は本人が行い、そこを最終確認の場にする。
 - `.claude/settings*.json`、`.mcp.json`、`.git/config`、`.git/hooks/` への書き込みを禁止する。
 - `.gitignore` と gitleaks の pre-commit hook で誤公開を防ぐ。server 側では GitHub push protection を有効にする。
@@ -66,6 +66,7 @@ dozou の開発では、最終的に Claude Code を長時間自律的に動か�
 2. agent が書いた code は、本人が実行すると sandbox の外で動く。`op run` で実行する前に、本人が差分を確認する。
 3. 入れ子の `.git` や `.vscode` の設定など、細かい迂回経路は残る。
 4. 操作の可否は auto mode の判断に任せる。
+5. Claude Docs connector は sandbox を通らない。agent は本人の文書を読み書きでき、文書内の指示による prompt injection の入口にもなる。認証情報と実データは読めないため、この経路で持ち出され得る範囲は限られる。
 
 ## 既知の制約
 
