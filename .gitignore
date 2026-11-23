@@ -21,6 +21,9 @@ data/*
 # Temporary directory of the sandbox verification script
 .verify-sandbox.*/
 
+# Tool caches
+.cache/
+
 # Python and dbt
 .venv/
 __pycache__/

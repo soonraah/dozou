@@ -64,13 +64,13 @@ fi
 
 expect_denied symlink-read-ssh "ls '$link_dir/ssh/'"
 
-expect_unreachable net-example example.com
+if [ -e "$HOME/dozou-data" ]; then
+  expect_denied read-real-data 'ls "$HOME/dozou-data"'
+else
+  echo "SKIP: read-real-data (~/dozou-data does not exist)"
+fi
+
 expect_unreachable net-github github.com
-expect_unreachable net-gitlab gitlab.com
-expect_unreachable net-huggingface huggingface.co
-expect_unreachable net-bitbucket bitbucket.org
-expect_unreachable net-pypi-upload upload.pypi.org
-expect_unreachable net-docs-site duckdb.org
 
 if perl -e 'alarm shift; exec @ARGV' 10 git ls-remote origin >/dev/null 2>&1; then
   fail git-remote
@@ -88,12 +88,17 @@ else
   fail net-pypi
 fi
 
+if python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0))' >/dev/null 2>&1; then
+  pass local-bind
+else
+  fail local-bind
+fi
+
 expect_denied write-settings ': >> .claude/settings.json'
 expect_denied write-hook ': >> .git/hooks/pre-commit'
 expect_denied write-git-config ': >> .git/config'
-expect_denied write-git-dir ': >> .git/description'
 expect_denied write-tool-versions ': >> .tool-versions'
-expect_create_denied create-git-file .git/verify-sandbox-probe
+expect_create_denied create-git-commondir .git/commondir
 expect_create_denied create-mcp .mcp.json
 expect_create_denied create-gitleaks-config .gitleaks.toml
 expect_create_denied create-gitleaks-ignore .gitleaksignore

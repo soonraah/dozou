@@ -2,104 +2,82 @@
 
 | 項目 | 内容 |
 |---|---|
-| ステータス | 承認済み (受け入れ確認は未完了) |
+| ステータス | 第 3 版、承認済み (受け入れ確認は未完了) |
 | 作成日 | 2026-11-23 |
 | 関連文書 | [03-refinement.md](../../strategies/personal-data-platform/03-refinement.md) |
 
 ## 目的
 
-dozou の戦略テストでは、Claude Code に実装を任せる。
-この repo は public であり、同じ Mac には他サービスの認証情報もある。
-そこで、agent が認証情報を読めず、repo の内容や data を外部へ持ち出しにくい状態を、実装の開始前に作る。
+dozou の開発では、最終的に Claude Code を長時間自律的に動かしたい。
+一方で、この repo は public であり、同じ Mac には他サービスの認証情報もある。
+そこで、agent が認証情報と実データを読めない状態を保ちつつ、運用の手間を増やさない設定を作る。
+
+第 2 版では実行ごとの clone と専用 runner を検討したが、運用が複雑になるため採用しなかった。
+第 3 版は、普段の checkout と project 設定だけで動かし、残るリスクを明示して許容する。
 
 ## 目標と非目標
 
 目標は次の 4 つである。
 
-- sandbox 内の Bash から、認証情報の置き場所と 1Password を利用できない。
-- Bash 以外の tool (WebFetch、MCP、connector) からの流出経路を絞る。
+- agent が認証情報の置き場所、1Password、実データを読めない。
 - agent が GitHub へ push できない。
+- agent が auto mode で、確認待ちを減らして開発と commit を続けられる。
 - 認証情報や data を誤って commit、push しにくい。
 
-次の 3 つは対象にしない。
+次の 4 つは対象にしない。
 
 - user scope の設定変更 (他 project の運用を変えないため)。
 - LLM provider に渡る会話内容の制御 (診断で、守る重心を認証情報に置いたため)。
-- 悪意ある依存 package を完全に防ぐこと (network と読み取りの制限で被害を抑えるにとどめる)。
-
-設定によって開発が止まり、運用が月 1 時間を超える状態は失敗とみなす。
+- 通信先の完全な制限 (project 設定では `strictAllowlist` を使えないため)。
+- 実データを使う取り込みや S3 同期の自動化 (これらは本人が `op run` で実行する)。
 
 ## 検討した方式
 
 | 方式 | 利点 | 欠点 | 判定 |
 |---|---|---|---|
-| A. project 設定 | 手間が小さく、repo で管理でき、desktop app でも使える可能性がある | 隔離は OS sandbox と permission rule に依存する | 採用 |
-| B. `claude --settings` の専用 launcher | user scope 限定の設定も使える | terminal 起動に限られ、起動方法を守る必要がある | A が desktop app で機能しない場合の代替 |
-| C. container 隔離 | home directory を見せずに済む | image、mount、DuckDB UI の接続を保守する必要がある | 運用負荷が大きいため不採用 |
+| A. project 設定と auto mode | 手間が最小で、desktop app をそのまま使える | 通信先の制限と、agent が書いた code の隔離は完全ではない | 採用 |
+| A + 使い捨て clone と runner | 通信先を強制でき、人の checkout を隔離できる | 実行と取り込みの手順が増える | 運用が複雑なため不採用 |
+| B. `claude --settings` の専用 launcher | user scope 限定の設定も使える | terminal 起動に限られる | 不採用 |
+| C. container 隔離 | home directory を見せずに済む | image と mount の保守が運用予算を圧迫する | 不採用 |
 
 ## 設計
 
-### 設定の置き場所
+### 維持する設定
 
-共有できる rule は `.claude/settings.json` に置く。
-public repo に出したくない個人環境固有の rule (個人用 MCP server の名前など) は、git 管理外の `.claude/settings.local.json` に置く。
-deny rule はどの scope に書いても有効である。
+- sandbox を必須にし、sandbox 外での再実行を禁止する。
+- 認証情報の置き場所と 1Password の領域の読み取りを禁止する。
+- `op`、connector、Chrome、built-in browser、Terminal panel、scheduled task、個人用 MCP server を禁止する。
+- GitHub と npm への Bash の通信を禁止する。push と PR 作成は本人が行い、そこを最終確認の場にする。
+- `.claude/settings*.json`、`.mcp.json`、`.git/config`、`.git/hooks/` への書き込みを禁止する。
+- `.gitignore` と gitleaks の pre-commit hook で誤公開を防ぐ。server 側では GitHub push protection を有効にする。
 
-### Bash の隔離
+### 変更する設定
 
-- `sandbox.enabled` と `failIfUnavailable` を `true` にし、sandbox を起動できない場合は Claude Code も起動しない。
-- `allowUnsandboxedCommands` を `false` にし、sandbox 外での再実行を禁止する。
-- `excludedCommands`、`allowUnixSockets`、`allowMachLookup` は設定しない。これにより 1Password と SSH agent への通信経路を開けない。
-- network の許可先は `pypi.org` と `files.pythonhosted.org` から始め、必要が生じたら個別に追加する。`github.com` は持ち出し経路になるため許可しない。
+- `disableAutoMode` を削除し、auto mode を使えるようにする。
+- 実データを repo の外の `~/dozou-data` に置き、読み取りを禁止する。agent は `data/sample/` で開発する。
+- `.dlt/secrets.toml` と、入れ子の `.env`、`.env.*` の読み取りを禁止する。
+- `.git/commondir`、`.tool-versions`、`.envrc`、`.gitleaks.toml`、`.gitleaksignore` への書き込みを禁止する。本人の git や asdf の操作で、agent の細工が sandbox の外で動く主な経路を塞ぐためである。
+- Bash の通信先に `extensions.duckdb.org` を追加し、local port の bind を許可する。
+- cache を repo 内の `.cache/` に向ける。絶対 path を public repo に出さないよう、この環境変数は git 管理外の `.claude/settings.local.json` に置く。
 
-### 認証情報の読み取り禁止
+## 許容するリスク
 
-`Read` の deny rule に次の場所を列挙する。
-この rule は Read tool に効き、sandbox の `denyRead` にも反映される。
-
-- `~/.ssh`、`~/.gnupg`、`~/.aws`、`~/.config/gh`、`~/.config/gcloud`、`~/.config/op`、`~/.kube`
-- `~/.docker/config.json`、`~/.dbt`、`~/.dlt`、`~/.duckdb`
-- `~/Library/Keychains`、1Password の application data
-- repo 内の `.env`、`.env.*`、`secrets/`
-
-環境変数は `sandbox.credentials.envVars` の deny で、GitHub と AWS の token を Bash に渡さない。
-
-### Bash 以外の経路
-
-- `disableClaudeAiConnectors` を `true` にし、Gmail などの connector を dozou で無効にする。
-- Chrome、built-in browser、Terminal panel、scheduled task、個人用 MCP server の tool を deny にする。Terminal panel の tool は sandbox の外で command を実行できるため、塞ぐ必要がある。
-- `mcp__*` の一括 deny は使わない。desktop app 自身の task list などの tool まで止めるためである。
-- `disableAutoMode` で auto mode を無効にする。WebFetch は開発に使う文書の domain だけを allow にし、それ以外は確認を求める。
-- agent が防御を解除できないよう、`.claude/settings*.json`、`.mcp.json`、`.git/config`、`.git/hooks/` への Edit を deny にする。
-
-### repo の誤公開対策
-
-- `.gitignore` に `.env*`、`.claude/settings.local.json`、data directory、DuckDB と DuckLake の file を追加する。sample data だけを追跡対象にする。
-- gitleaks を pre-commit で実行する。agent は hook を迂回できる可能性があるため、これは補助策である。
-- server 側の防御として GitHub の push protection を有効にする。
-- push と PR 作成は、本人が自分の terminal で行う。
+1. 未許可の host に通信できる場合がある。認証情報と実データは読めないため、持ち出され得るのは主に public な code と会話内容である。
+2. agent が書いた code は、本人が実行すると sandbox の外で動く。`op run` で実行する前に、本人が差分を確認する。
+3. 入れ子の `.git` や `.vscode` の設定など、細かい迂回経路は残る。
+4. 操作の可否は auto mode の判断に任せる。
 
 ## 受け入れ条件
 
-実装後、実際に次を試して確認する。
-
-1. sandbox 内の Bash から `~/.ssh` と `~/.aws` の一覧を取得できない。
-2. Read tool で認証情報の置き場所を読めない。
-3. sandbox 内の Bash から許可外の domain と `github.com` に接続できず、`git push` も失敗する。
-4. `pypi.org` からの package 取得は成功する。
-5. connector、Chrome、Terminal panel の tool を使えない。
-6. agent が `.claude/settings.json` を編集できない。
-7. dummy の secret を含む commit を gitleaks が止める。
-8. `op` の install 後、sandbox 内の Bash から `op whoami` と `op vault list` が失敗する。この確認は本人が行う。
-
-## 未確認の事項
-
-- desktop app の Code tab で sandbox が有効になるか。無効なら方式 B に切り替える。
-- login Keychain への到達可否。公式 docs に記載がないため、受け入れ確認の際に試す。
-- `sandbox.credentials` の deny が、`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` なしで環境変数を除去するか。
+1. sandbox 内の Bash と Read tool から、認証情報の置き場所を読めない。
+2. sandbox 内の Bash から `github.com` に接続できず、`git push` も失敗する。
+3. `pypi.org` からの取得と local port の bind が成功する。
+4. `.git/commondir`、`.tool-versions`、`.envrc`、gitleaks の設定 file に書き込めない。
+5. agent が sandbox 内で通常の commit を作成できる。
+6. dummy の secret を含む commit を gitleaks が止める。
+7. 本人が sandbox 内の Bash から `op vault list` を実行し、失敗することを確認する。
+8. 最初の長時間実行で、auto mode が確認待ちで止まらないことを確認する。
 
 ## 実装者に任せる事項
 
-- WebFetch の許可 domain の具体的な一覧。
-- data directory の名前と `.gitignore` の細部。
-- gitleaks の導入方法。
+- 検証 script の項目の細部。
