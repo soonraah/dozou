@@ -67,6 +67,12 @@ dozou の開発では、最終的に Claude Code を長時間自律的に動か�
 3. 入れ子の `.git` や `.vscode` の設定など、細かい迂回経路は残る。
 4. 操作の可否は auto mode の判断に任せる。
 
+## 既知の制約
+
+sandbox 内の DuckDB は、既定の設定では extension を install できない。
+既定の `~/.duckdb` に書き込めず、sandbox の proxy 環境変数も parse できないためである。
+DuckDB の接続処理を実装するときに、`extension_directory` を `.cache/duckdb/extensions` に向け、proxy を `http_proxy`、`http_proxy_username`、`http_proxy_password` に分けて設定する。
+
 ## 受け入れ条件
 
 1. sandbox 内の Bash と Read tool から、認証情報の置き場所を読めない。

@@ -3,7 +3,7 @@
 .env.*
 !.env.example
 secrets/
-.dlt/secrets.toml
+**/.dlt/secrets.toml
 
 # Claude Code local settings
 .claude/settings.local.json
@@ -17,6 +17,8 @@ data/*
 *.duckdb.wal
 *.ducklake
 *.ducklake.wal
+*.ducklake.files/
+*.duckdb.tmp/
 
 # Temporary directory of the sandbox verification script
 .verify-sandbox.*/
