@@ -1,0 +1,68 @@
+{
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
+  },
+  "disableAutoMode": "disable",
+  "disableClaudeAiConnectors": true,
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:duckdb.org)",
+      "WebFetch(domain:ducklake.select)",
+      "WebFetch(domain:docs.getdbt.com)",
+      "WebFetch(domain:dlthub.com)",
+      "WebFetch(domain:developer.todoist.com)"
+    ],
+    "deny": [
+      "Read(~/.ssh/**)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.config/gh/**)",
+      "Read(~/.config/gcloud/**)",
+      "Read(~/.config/op/**)",
+      "Read(~/.kube/**)",
+      "Read(~/.docker/config.json)",
+      "Read(~/.dbt/**)",
+      "Read(~/.dlt/**)",
+      "Read(~/.duckdb/**)",
+      "Read(~/Library/Keychains/**)",
+      "Read(~/Library/Group Containers/2BUA8C4S2C.com.1password/**)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Edit(./.claude/settings.json)",
+      "Edit(./.claude/settings.local.json)",
+      "Edit(./.mcp.json)",
+      "Edit(./.git/config)",
+      "Edit(./.git/hooks/**)",
+      "Bash(op)",
+      "Bash(op *)",
+      "mcp__terminal",
+      "mcp__Claude_Browser",
+      "mcp__claude-in-chrome",
+      "mcp__scheduled-tasks"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "autoAllowBashIfSandboxed": true,
+    "network": {
+      "allowedDomains": [
+        "pypi.org",
+        "files.pythonhosted.org"
+      ]
+    },
+    "credentials": {
+      "envVars": [
+        { "name": "GH_TOKEN", "mode": "deny" },
+        { "name": "GITHUB_TOKEN", "mode": "deny" },
+        { "name": "AWS_ACCESS_KEY_ID", "mode": "deny" },
+        { "name": "AWS_SECRET_ACCESS_KEY", "mode": "deny" },
+        { "name": "AWS_SESSION_TOKEN", "mode": "deny" }
+      ]
+    }
+  }
+}
