@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.*
+!.env.example
+secrets/
+.dlt/secrets.toml
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Personal data (only sample data is tracked)
+data/*
+!data/sample/
+
+# DuckDB and DuckLake
+*.duckdb
+*.duckdb.wal
+*.ducklake
+*.ducklake.wal
+
+# Python and dbt
+.venv/
+__pycache__/
+target/
+logs/
