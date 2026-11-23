@@ -115,7 +115,12 @@ fi
 if [ "${VERIFY_OP:-0}" != "1" ]; then
   echo "SKIP: op-blocked (person-only check, set VERIFY_OP=1)"
 elif command -v op >/dev/null 2>&1; then
-  expect_denied op-blocked 'op vault list'
+  # op reports its own error, so a person must also confirm that no 1Password prompt appeared.
+  if perl -e 'alarm shift; exec @ARGV' 10 op vault list >/dev/null 2>&1; then
+    fail op-blocked
+  else
+    pass "op-blocked (confirm that no 1Password prompt appeared)"
+  fi
 else
   echo "SKIP: op-blocked (op not installed)"
 fi

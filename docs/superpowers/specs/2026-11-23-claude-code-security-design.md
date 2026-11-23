@@ -82,7 +82,7 @@ DuckDB の接続処理を実装するときに、`extension_directory` を `.cac
 4. `.git/commondir`、`.tool-versions`、`.envrc`、gitleaks の設定 file に書き込めない。
 5. agent が sandbox 内で通常の commit を作成できる。
 6. dummy の secret を含む commit を gitleaks が止める。
-7. 本人が sandbox 内の Bash から `op vault list` を実行し、失敗することを確認する。
+7. 1Password を lock した状態で、sandbox 内の Bash から `op vault list` を実行し、失敗して 1Password の画面が出ないことを本人が確認する (2026-11-23 確認済み。unlock 中の挙動は未検証)。
 8. 最初の長時間実行で、auto mode が確認待ちで止まらないことを確認する。
 
 ## 実装者に任せる事項
