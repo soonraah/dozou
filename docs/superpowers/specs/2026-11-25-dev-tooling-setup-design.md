@@ -2,7 +2,7 @@
 
 | 項目 | 内容 |
 |---|---|
-| ステータス | 承認待ち |
+| ステータス | 実装済み (2026-11-25) |
 | 作成日 | 2026-11-25 |
 | 規模 | 小さな変更 (雑務 1 branch) |
 | 関連文書 | [03-refinement.md](../../strategies/personal-data-platform/03-refinement.md) |
@@ -65,6 +65,8 @@ markdown の linter は、Python 製で markdownlint と rule ID が共通の py
 - flake8 は black に合わせ、`max-line-length = 88`、`extend-ignore = E203,E701` とする。flake8 は `pyproject.toml` を読まないので `.flake8` に書く。
 - pymarkdownlnt は、一文一行の日本語の文章に合わせて行長 (`MD013`) を無効にする。他に既存 docs と衝突する rule があれば、実装時に既存 docs を scan して無効化の要否を判断する。
 - `.git/hooks` は agent が編集できないため、`uv run pre-commit install` は本人が実行する。
+- `uv run --frozen` は dev group だけでなく project の全依存関係を sync する。そのため、`.venv` がない状態 (新しい clone や CI) で hook を初めて動かすときは、dbt-core の build のために github.com への通信が必要になる。sandbox では本人が github.com を許可済みなので通る。
+- sandbox の中で `git commit` するときは、`PRE_COMMIT_HOME` を repo 内の `.cache/pre-commit` に向ける必要がある (既定の `~/.cache/pre-commit` には書き込めない)。
 
 ### PR template
 
