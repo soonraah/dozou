@@ -1,0 +1,25 @@
+[project]
+name = "dozou"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "dbt-core>=1.12.7",
+    "dbt-duckdb>=1.11.1",
+    "dlt[duckdb]>=1.32.0",
+    "duckdb>=1.5.6",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "black>=26.10.1",
+    "conventional-pre-commit>=4.5.0",
+    "flake8>=7.5.0",
+    "pre-commit>=4.7.0",
+    "pymarkdownlnt>=0.9.42",
+    "pytest>=9.2.0",
+    "sqlfluff>=4.5.0",
+    "sqlfluff-templater-dbt>=4.5.0",
+]
