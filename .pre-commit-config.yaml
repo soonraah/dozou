@@ -1,0 +1,28 @@
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
+
+# All hooks run tools pinned in uv.lock, so they work without network access.
+repos:
+  - repo: local
+    hooks:
+      - id: conventional-pre-commit
+        name: conventional-pre-commit
+        entry: uv run --frozen conventional-pre-commit
+        language: system
+        stages: [commit-msg]
+      - id: black
+        name: black
+        entry: uv run --frozen black
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+      - id: flake8
+        name: flake8
+        entry: uv run --frozen flake8
+        language: system
+        types: [python]
+      - id: pymarkdown
+        name: pymarkdown
+        entry: uv run --frozen pymarkdown scan
+        language: system
+        types: [markdown]
