@@ -36,10 +36,12 @@
 ### Task 1: uv project と依存関係
 
 **Files:**
+
 - Create: `pyproject.toml`, `.python-version`, `uv.lock`, `.gitignore` (`.venv/`、`.cache/`、`__pycache__/` の 3 行)
 - Commit も: `docs/superpowers/specs/2026-11-25-dev-tooling-setup-design.md`, `docs/superpowers/plans/2026-11-25-dev-tooling-setup.md`
 
 **Interfaces:**
+
 - Produces: `uv run --frozen <tool>` で `pre-commit`、`black`、`flake8`、`conventional-pre-commit`、`pymarkdown`、`sqlfluff`、`pytest`、`dbt` が呼べる。`pyproject.toml` に `[tool.black]` と `[tool.pymarkdown]` を後続 Task が足す。
 
 - [ ] **Step 1: project を作る**
@@ -74,11 +76,13 @@ git commit -m "build: add uv project with ingestion and transform dependencies"
 ### Task 2: pre-commit
 
 **Files:**
+
 - Create: `.pre-commit-config.yaml`, `.flake8`
 - Modify: `pyproject.toml` (`[tool.black]`、`[tool.pymarkdown]` を追加)
 - Modify (必要な場合のみ): 既存の `*.md`
 
 **Interfaces:**
+
 - Consumes: Task 1 の `uv run --frozen <tool>`。
 - Produces: hook id `conventional-pre-commit` (stage `commit-msg`)、`black`、`flake8`、`pymarkdown` (stage `pre-commit`)。
 
@@ -106,6 +110,7 @@ Run: `uv run --frozen pymarkdown scan -r docs README.md tools`
 Expected: `MD013` 以外の違反が一覧で出る (0 件でもよい)。
 
 判断基準は次のとおり:
+
 - 同じ rule の違反が多数の file にまたがり、日本語の文体や既存の書き方 (表、一文一行など) に由来するもの → `[tool.pymarkdown]` で無効化し、理由を 1 行コメントで書く。
 - 個別の誤り (見出しレベルの飛び、末尾空白など) → file を修正する。
 - 修正が 20 file を超える場合は、ここで止めて本人に扱いを確認する (spec の非目標)。
@@ -146,6 +151,7 @@ git commit -m "build: add local pre-commit hooks for commit messages, Python and
 ### Task 3: PR template
 
 **Files:**
+
 - Create: `.github/pull_request_template.md`
 
 - [ ] **Step 1: template を書く**

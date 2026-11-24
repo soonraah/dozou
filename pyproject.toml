@@ -23,3 +23,14 @@ dev = [
     "sqlfluff>=4.5.0",
     "sqlfluff-templater-dbt>=4.5.0",
 ]
+
+[tool.black]
+target-version = ["py312"]
+
+[tool.pymarkdown]
+# Japanese docs are written one sentence per line, so line length is not limited.
+plugins.md013.enabled = false
+# Source tables in the strategy docs list plain URLs on purpose.
+plugins.md034.enabled = false
+# Bold-only list items are used as labels, not as headings.
+plugins.md036.enabled = false

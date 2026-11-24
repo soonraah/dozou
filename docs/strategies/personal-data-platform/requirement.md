@@ -29,10 +29,9 @@
 - クラウド等への課金については無料または低コスト
 - データ量はあまり大きくない
 - MCP 等で Claude Code (やできれば Claude Desktip にも) とつないで使用したい
-    - ローカルで接続できれば OK
+  - ローカルで接続できれば OK
 - 個人の情報なのでセキュリティには気をつけたい
 - 運用の手間を小さくしたい
-
 
 ## データソース
 
@@ -41,7 +40,7 @@
 - Oura Ring の API から取得する健康・運動データ
 - MoneyForward から download した収入・支出や資産のデータ
 - Suunto のスマホアプリから export した FIT または JSON 形式のスキューバダイビングのデータ
-    - Suunto D5 というダイビングコンピュータの記録
+  - Suunto D5 というダイビングコンピュータの記録
 - 健康診断の結果 (手動入力)
 - Todoist の API から取得する日々のタスクのデータ
 
@@ -50,5 +49,5 @@
 ## その他
 
 - 以前簡単に調査したときの資料はこちら
-    - https://claude.ai/artifact/AgKwjcoBMNNtXEKNaaE1JF
-    - このときの推奨に影響されず、忌憚なく調査・提案してほしい
+  - https://claude.ai/artifact/AgKwjcoBMNNtXEKNaaE1JF
+  - このときの推奨に影響されず、忌憚なく調査・提案してほしい
