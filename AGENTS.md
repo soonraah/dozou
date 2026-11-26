@@ -7,6 +7,7 @@ dozou (個人の data platform) で作業する agent への入口である。
 ## 起動手順
 
 1. `bash init.sh` を実行する。失敗したら、新しい作業の前に原因を直す。
+   cache や git hooks の設定が原因で失敗したときは、cache の env を上書きして回避せず、作業を止めて人間に依頼する。これは Interventions に `permission` として記録する。
 2. `claude-progress.md` の最新の session を読み、前回の続きを把握する。
 3. `feature_list.json` を読み、扱う feature を 1 つ決める。
 
@@ -48,6 +49,7 @@ top-level の directory を追加・変更したら、この表も更新する�
 
 1. `claude-progress.md` に、書式に従って session の entry を追記する。人間の介入は Interventions に漏れなく書く。
 2. 作業ツリーを clean state にして commit する。
+3. feature の作業は main ではなく branch で行い、完了したら push して PR を作成する。
 
 ## feature list の規則
 

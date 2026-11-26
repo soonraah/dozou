@@ -50,7 +50,7 @@
   2. (i) MoneyForward の CSV 1 ファイルを dlt で取り込む機能。personal-data-platform の戦略テストの最初の一歩を兼ねる、複雑な切り口。dozou 固有の完了判定 (L1) も試せる。
 
   各機能の結果を見て harness を改善し、次の機能で再び試すループを回す。ほかの data source や機能も対象に含めてよい。
-- **最初の構成**: superpowers、pre-commit、PR template に、walkinglabs の最小構成の 4 file (`AGENTS.md`、`init.sh`、`claude-progress.md`、`feature_list.json`) を足したもの。探究の B 案 (最小限で始め、失敗が起きた箇所から育てる) の検証を兼ねる。設計は [2026-11-27-agent-harness-minimal-design.md](../../superpowers/specs/2026-11-27-agent-harness-minimal-design.md) を参照。
+- **最初の構成**: superpowers、pre-commit、PR template に、walkinglabs の最小構成の 4 file (`AGENTS.md`、`init.sh`、`claude-progress.md`、`feature_list.json`) を足したもの。探究の B 案 (最小限で始め、失敗が起きた箇所から育てる) の検証を兼ねる。補足調査で保留していた JSON の feature list は、walkinglabs の最小構成に含まれるため、テスト開始時から入れることにした (2026-11-27)。agent が変えてよい項目を絞る運用は、テスト中に必要になってから検討する。設計は [2026-11-27-agent-harness-minimal-design.md](../../superpowers/specs/2026-11-27-agent-harness-minimal-design.md) を参照。
 - **spec の扱い**: 当面は人間が spec の承認だけを行う。最終目標は spec の作成も含めて agent に任せること。
 - **スポンサー**: 本人
 - **ガイド**: 本人
@@ -123,9 +123,7 @@
 先に入れると、L2 の観測に最小構成の挙動と plugin の効果が混ざり、B 案の検証にならないためである。
 
 - superpowers の brainstorming が「介入なし」とぶつかった場合の代わりとして、feature-dev (Anthropic 公式) を使う。
-- L1 (完了判定) への打ち手:
-  - 作る agent と評価する agent を分ける (Anthropic の evaluator)。
-- JSON の feature list (`feature_list.json`) は、walkinglabs の最小構成に含まれるため、テスト開始時から入れることにした (2026-11-27)。agent が変えてよい項目を絞る運用は、テスト中に必要になってから検討する。
+- L1 (完了判定) への打ち手として、作る agent と評価する agent を分ける (Anthropic の evaluator)。
 - 切り口 (i) (MoneyForward の取り込み) の補助として、dlt の AI harness や dbt Labs の dbt-agent-skills を使う。
 
 ## 次の洗練の予定
