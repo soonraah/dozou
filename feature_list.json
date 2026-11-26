@@ -1,0 +1,15 @@
+{
+  "project": "dozou",
+  "description": "Personal data platform. Each feature is tracked with its status and the evidence that proves it is done.",
+  "features": [
+    {
+      "id": "mf-csv-ingest",
+      "name": "MoneyForward CSV ingestion",
+      "description": "MoneyForward の CSV 1 ファイルを dlt で取り込む",
+      "spec": null,
+      "status": "not-started",
+      "evidence": null,
+      "testedAt": null
+    }
+  ]
+}
