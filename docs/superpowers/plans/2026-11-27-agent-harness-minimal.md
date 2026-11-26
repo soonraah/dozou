@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** repo root に walkinglabs の最小構成 4 file (`AGENTS.md`、`init.sh`、`claude-progress.md`、`feature_list.json`) を置き、03-refinement.md を更新する。
+**Goal:** cache の sandbox 設定を直したうえで、repo root に walkinglabs の最小構成 4 file (`AGENTS.md`、`init.sh`、`claude-progress.md`、`feature_list.json`) を置き、03-refinement.md を更新する。
 
 **Architecture:** 4 file はすべて repo root に置く。`init.sh` が環境の検証を、`feature_list.json` が機能単位の状態と証拠を、`claude-progress.md` が session 単位のログを担う。`AGENTS.md` はそれらへの入口と Definition of Done をまとめる。
 
@@ -22,13 +22,31 @@
 
 ## Review Focus
 
-- 環境変数 `UV_CACHE_DIR` が、書き込めない場所を指している場合。worktree の sandbox からは main checkout の `.cache/uv` に書き込めず、`uv run` が `Could not acquire lock` で失敗することを確認済みである。`init.sh` は、書き込めないときに `$TMPDIR/uv-cache` へ切り替え、そのことを表示する。(Task 1)
+- uv または pre-commit の cache directory に書き込めない場合。worktree の sandbox からは書き込み許可の外にある cache に書けず、`uv run` が `Could not acquire lock` で失敗することを確認済みである。`init.sh` は自動で切り替えず、spec の「cache の置き場所」の設定を案内して非 0 で終わる。(Task 1)
 - `init.sh` を repo root 以外の directory から実行した場合も、repo root で動く。(Task 1)
 - `tests/` が無い、または test file が 0 件の場合は、pytest を skip して exit 0 で終わる。(Task 1)
 - pre-commit が file を書き換えて失敗した場合は、`init.sh` も非 0 で終わる。`set -e` に任せ、成功扱いにしない。(Task 1)
 - agent が `CLAUDE.md` を作ってしまい、`AGENTS.md` が読まれなくなる。`AGENTS.md` の明記で防ぎ、最後に `ls` で不在を確認する。(Task 3)
 
 ---
+
+### Task 0: cache の sandbox 設定を commit する
+
+**Files:**
+
+- Create: `.claude/settings.json` (保護された path なので本人が作る。agent は中身の確認と commit だけ行う)
+
+- [ ] **Step 1: 中身を確認する**
+
+Run: `cat .claude/settings.json`
+Expected: `sandbox.filesystem.allowWrite` が `["~/.cache/uv", "~/.cache/pre-commit"]` である。
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add .claude/settings.json
+git commit -m "chore(claude): allow sandbox writes to uv and pre-commit caches"
+```
 
 ### Task 1: `init.sh`
 
@@ -50,7 +68,7 @@ Expected: `No such file or directory`
 `#!/usr/bin/env bash` と `set -euo pipefail` で始め、最初に `cd "$(dirname "$0")"` で repo root に移動する。
 次の 5 段を `[n/5]` 付きで表示しながら実行する。
 
-1. uv の cache の確認。`UV_CACHE_DIR` が未設定なら何もしない。設定されていて、`mkdir -p` が失敗するか書き込めないときは、`export UV_CACHE_DIR="${TMPDIR:-/tmp}/uv-cache"` に切り替え、その旨を表示する。
+1. cache の確認。対象は `uv cache dir` が返す path と、`${PRE_COMMIT_HOME:-${XDG_CACHE_HOME:-$HOME/.cache}/pre-commit}` の 2 つ。それぞれ `mkdir -p` と一時 file の作成・削除で書き込めるかを確かめる。書き込めなければ、その path と「`.claude/settings.json` の `sandbox.filesystem.allowWrite` に含まれているか、`settings.local.json` の `env` で別の場所に向けていないかを確認する」旨を stderr に出して `exit 1` する。
 2. `uv sync --frozen`
 3. `uv run --frozen pre-commit install`
 4. `uv run --frozen pre-commit run --all-files`
@@ -62,11 +80,12 @@ Expected: `No such file or directory`
 
 Run: `chmod +x init.sh && bash init.sh; echo "exit=$?"`
 Expected: 5 段がすべて表示され、`skip (no tests)` が出て、`exit=0` で終わる。
+cache の設定を反映する前の session で実行する場合は、`UV_CACHE_DIR="$TMPDIR/uv" PRE_COMMIT_HOME="$TMPDIR/pre-commit" bash init.sh` で代用し、そのことを progress に記録する。
 
 - [ ] **Step 4: 書き込めない cache と、subdirectory からの実行を確認する**
 
 Run: `(cd docs && UV_CACHE_DIR=/nonexistent-root/uv bash ../init.sh); echo "exit=$?"`
-Expected: cache の切り替えの message が出て、`exit=0` で終わる。
+Expected: `/nonexistent-root/uv` と案内の message が stderr に出て、`exit=1` で終わる。
 
 - [ ] **Step 5: Commit**
 

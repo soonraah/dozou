@@ -68,7 +68,7 @@ Claude Code は v2.1.277 から project root の `AGENTS.md` を読み込む (<h
 - **プロジェクト構成**: top-level の directory と主要な file を、役割 1 行ずつの表にする。対象は次のとおり。
   - `docs/strategies/`、`docs/superpowers/specs/`、`docs/superpowers/plans/`
   - harness の 4 file
-  - `pyproject.toml`、`uv.lock`、`.pre-commit-config.yaml`、`.github/`
+  - `pyproject.toml`、`uv.lock`、`.pre-commit-config.yaml`、`.github/`、`.claude/settings.json`
   - 深い階層や個々の file は書かない。dlt や dbt の directory は、作った時点で agent が追記する。
 - **作業の進め方**: 1 session で扱う feature は 1 つにする。設計と計画は superpowers の flow (spec → plan → 実装) に従う。spec は人間が承認する。
 - **Definition of Done**: 次をすべて満たしたときだけ完了とする。
@@ -86,13 +86,39 @@ Claude Code は v2.1.277 から project root の `AGENTS.md` を読み込む (<h
 
 `#!/usr/bin/env bash` と `set -euo pipefail` を使い、次を順に実行する。
 
-1. `uv sync --frozen`
-2. `uv run --frozen pre-commit install`
-3. `uv run --frozen pre-commit run --all-files`
-4. `tests/` に test がある場合だけ `uv run --frozen pytest`
+1. uv と pre-commit の cache directory に書き込めるかを確認する。書き込めなければ、下記「cache の置き場所」の設定を案内して非 0 で終わる。`$TMPDIR` などへの自動切り替えはしない (設定の不備を隠すため)。
+2. `uv sync --frozen`
+3. `uv run --frozen pre-commit install`
+4. `uv run --frozen pre-commit run --all-files`
+5. `tests/` に test がある場合だけ `uv run --frozen pytest`
 
 最後に、次に読む file (`claude-progress.md`、`feature_list.json`) を表示する。
 network を使う処理は `uv sync` だけにする。agent の sandbox の中で実行できる必要がある。
+
+### cache の置き場所
+
+実装前に、worktree からの `uv run` と pre-commit が `Could not acquire lock` で失敗することが分かった。
+原因は次のとおりである。
+
+- `settings.local.json` の `env` で、cache を main checkout の `<repo>/.cache/` に固定していた。
+- sandbox が書き込みを許すのは worktree、`$TMPDIR`、main repo の `.git`、`sandbox.filesystem.allowWrite` の path だけである。
+
+調査の結果、次の構成にする (本人が選択)。
+
+- `UV_CACHE_DIR`、`PRE_COMMIT_HOME`、`XDG_CACHE_HOME`、`PIP_CACHE_DIR` を `env` から削除し、各 tool の既定 (`~/.cache/uv`、`~/.cache/pre-commit`) に戻す。`settings.local.json` は repo 外なので本人が編集する。
+- repo の `.claude/settings.json` に `sandbox.filesystem.allowWrite: ["~/.cache/uv", "~/.cache/pre-commit"]` を書いて commit する。home 相対なので新しい Mac でも clone だけで再現できる。
+
+uv の cache と pre-commit の store は lock 付きで同時利用を前提にしているので、複数 worktree での共有は安全である。
+cache と worktree は同じ APFS volume にあるので、uv の clonefile (CoW) が効く。
+sandbox 内の command が、通常の shell と共有する cache を書き換えられるようになる点は、個人開発として許容する。
+
+検討した他の案は次のとおり。
+
+| 案 | 判定 |
+|---|---|
+| `<repo>/.cache` を absolute path で allowWrite | machine ごとに path を書き直す必要がある。不採用 |
+| worktree ごとに cache を置く | worktree を作るたびに download し直す。不採用 |
+| `$TMPDIR` に置く | reboot や cleanup で消える。不採用 |
 
 ### `claude-progress.md`
 
@@ -132,6 +158,7 @@ top-level の key は `project`、`description`、`features` にする。
 ## 検証
 
 - `bash init.sh` が、clean な worktree で exit 0 で終わる。
+- cache の設定を反映した新しい session で、worktree から `uv run` と pre-commit が通る。
 - `python -m json.tool feature_list.json` が通る。
 - `AGENTS.md` が 80 行以内である。
 - 新しい session で `/context` を開き、`AGENTS.md` が Memory files に含まれる。これは人間が確認する。
