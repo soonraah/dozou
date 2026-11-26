@@ -5,7 +5,7 @@
 | 戦略名 | agent-harness |
 | ステータス | レビュー中 (戦略テストは未開始) |
 | 作成日 | 2026-11-26 |
-| 最終更新日 | 2026-11-26 |
+| 最終更新日 | 2026-11-27 |
 | 質問の窓口 | 本人 |
 
 ## 洗練の要約
@@ -50,7 +50,7 @@
   2. (i) MoneyForward の CSV 1 ファイルを dlt で取り込む機能。personal-data-platform の戦略テストの最初の一歩を兼ねる、複雑な切り口。dozou 固有の完了判定 (L1) も試せる。
 
   各機能の結果を見て harness を改善し、次の機能で再び試すループを回す。ほかの data source や機能も対象に含めてよい。
-- **最初の構成**: superpowers、pre-commit、PR template に、薄い指示書を足したもの。探究の B 案 (最小限で始め、失敗が起きた箇所から育てる) の検証を兼ねる。
+- **最初の構成**: superpowers、pre-commit、PR template に、walkinglabs の最小構成の 4 file (`AGENTS.md`、`init.sh`、`claude-progress.md`、`feature_list.json`) を足したもの。探究の B 案 (最小限で始め、失敗が起きた箇所から育てる) の検証を兼ねる。設計は [2026-11-27-agent-harness-minimal-design.md](../../superpowers/specs/2026-11-27-agent-harness-minimal-design.md) を参照。
 - **spec の扱い**: 当面は人間が spec の承認だけを行う。最終目標は spec の作成も含めて agent に任せること。
 - **スポンサー**: 本人
 - **ガイド**: 本人
@@ -105,7 +105,7 @@
 
 - テストの結果すべて (L1、L2、L5)。
 - model と Claude Code の進化 (診断の視点 ④) をどう扱うか。
-- 週次の振り返りで使う介入の記録を、どこからどう取るか。
+- 週次の振り返りで使う介入の記録を、どこからどう取るか。当面は、agent が `claude-progress.md` の Interventions に書いたものを使う。agent が書き漏らす介入をどう拾うかは未解決である。
 - 外部の skill や plugin を取り込むときの審査 (version の pin、scan、権限の制限) をどこまで決めるか。security の後回しと関わる。
 
 ### 保留した解決策案
@@ -125,7 +125,7 @@
 - superpowers の brainstorming が「介入なし」とぶつかった場合の代わりとして、feature-dev (Anthropic 公式) を使う。
 - L1 (完了判定) への打ち手:
   - 作る agent と評価する agent を分ける (Anthropic の evaluator)。
-  - JSON の feature list を使い、agent が変えてよい項目を `passes` だけに絞る。
+- JSON の feature list (`feature_list.json`) は、walkinglabs の最小構成に含まれるため、テスト開始時から入れることにした (2026-11-27)。agent が変えてよい項目を絞る運用は、テスト中に必要になってから検討する。
 - 切り口 (i) (MoneyForward の取り込み) の補助として、dlt の AI harness や dbt Labs の dbt-agent-skills を使う。
 
 ## 次の洗練の予定
