@@ -106,6 +106,7 @@
 - テストの結果すべて (L1、L2、L5)。
 - model と Claude Code の進化 (診断の視点 ④) をどう扱うか。
 - 週次の振り返りで使う介入の記録を、どこからどう取るか。
+- 外部の skill や plugin を取り込むときの審査 (version の pin、scan、権限の制限) をどこまで決めるか。security の後回しと関わる。
 
 ### 保留した解決策案
 
@@ -116,6 +117,16 @@
   - Mac の launchd などから `claude -p` を起動する: session の記録を読めるが、Mac が常時起動ではないため実行されないことがある。
   - 振り返り用の skill / slash command を作り、日曜に手動で実行する: 自動ではないが、環境に依存しない。
 - 介入の記録を、session の transcript (`~/.claude/projects`) から集計する。
+
+補足調査 ([research-skills-plugins.md](research-skills-plugins.md)) から加えた候補は次のとおり。
+テスト開始前には入れず、テスト中に実際に起きた介入ややり直しへの対策として検討する。
+先に入れると、L2 の観測に最小構成の挙動と plugin の効果が混ざり、B 案の検証にならないためである。
+
+- superpowers の brainstorming が「介入なし」とぶつかった場合の代わりとして、feature-dev (Anthropic 公式) を使う。
+- L1 (完了判定) への打ち手:
+  - 作る agent と評価する agent を分ける (Anthropic の evaluator)。
+  - JSON の feature list を使い、agent が変えてよい項目を `passes` だけに絞る。
+- 切り口 (i) (MoneyForward の取り込み) の補助として、dlt の AI harness や dbt Labs の dbt-agent-skills を使う。
 
 ## 次の洗練の予定
 
@@ -128,4 +139,5 @@
 - [探究](./01-exploration.md)
 - [診断](./02-diagnosis.md)
 - [要件](./requirement.md)
+- [補足調査: 自律実行に有用な skill / plugin](./research-skills-plugins.md)
 - [personal-data-platform の洗練](../personal-data-platform/03-refinement.md)

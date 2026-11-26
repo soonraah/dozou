@@ -194,6 +194,22 @@ Claude Code 向けの harness には、大きく 8 つの選択肢があった�
   - 講義 10〜12 の数値は、説明用の例か、本文自身が「仮想的」と明記したものである。
   - 例はほぼすべて greenfield の web app (Playwright や Puppeteer による E2E) で、データパイプラインでは何が E2E に当たるかを扱っていない。
 
+## 補足調査: 自律実行に有用な skill / plugin (2026-11-26)
+
+洗練の後に、自律実行に有用な skill と plugin を追加で調べた。
+詳細は [research-skills-plugins.md](research-skills-plugins.md) にある。
+ここには選択肢の幅を広げるものだけを挙げる。
+
+- superpowers 以外の開発 workflow:
+  - feature-dev (Anthropic 公式) は、discovery から summary までの 7 phase を 3 つの subagent (explorer / architect / reviewer) で進める。
+  - pstack (cursor/plugins に掲載された個人作者の plugin) は「go deep first」を掲げ、まず 1 agent を信頼できる状態にしてから並列化する。
+- loop・並列化・二次意見の実例: cursor の ralph-loop (反復 loop)、orchestrate (planner / worker / verifier)、advisor (重要な判断の前に強い model に相談する)。
+- data 基盤向け: dbt Labs 公式の dbt-agent-skills と、dlt の AI harness がある。
+- 標準: SKILL.md (Agent Skills)、AGENTS.md、MCP が AAIF (Linux Foundation 配下) にまとまり、特定の tool に依存しない形で整備できる。
+- リスク: Snyk の調査 (2026-02 時点、2 registry、3,984 件) では、公開 skill の 13.4% に critical な問題があった。
+- 原則: Anthropic (Lance Martin) は、model が良くなったら harness の logic を削るべきだとし、ある model で必要だった context reset が次の model では「dead weight」になった例を挙げている。
+- **この調査が語っていないこと**: 個別 plugin の効果は作者や vendor の主張に頼っており、第三者の benchmark は見つかっていない。GitHub への接続が sandbox で拒否されたため、repo の最新状態は直接確認していない。
+
 ## 実務担当者から聞いたこと
 
 | 誰に | その人の文脈 | 聞いたこと | 自社との条件の違い |

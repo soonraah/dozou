@@ -74,7 +74,7 @@ dozou は個人開発で、関係者は本人だけである。
   - cloud での無人実行 (探究の E 案) は現時点で考えていない。
   - 検証手段は静的 check のみ。
 - **組織・意思決定**: 決めるのは本人。動機の面では、楽しさの源が coding から harness 構築・agent の management・それで得られる product 機能に移っている。これは作り込みへの引力にもなる。
-- **外部要因**: Claude Code と model の進化が速い。業務では Databricks 上の dbt / terraform 開発で、superpowers を中心にした harness を約 3 か月運用しており、その知見と癖を持ち込める。
+- **外部要因**: Claude Code と model の進化が速い。業務では Databricks 上の dbt / terraform 開発で、superpowers を中心にした harness を約 3 か月運用しており、その知見と癖を持ち込める。公開 registry の skill は 13.4% に critical な問題があるという調査がある (Snyk、2026-02 時点。[research-skills-plugins.md](research-skills-plugins.md))。外部の skill や plugin を取り込むことは security の論点に直結し、security を後回しにする順序とぶつかりうる。
 
 ## 6. この戦略が満たすべき条件
 
@@ -123,7 +123,7 @@ dozou は個人開発で、関係者は本人だけである。
 - 目標とする自律性の水準。「確認・承認依頼が多いと困る」の許容ラインが数値になっていない。
 - dozou で agent が実際にどこで止まり、どこで失敗するか。業務の観察が dozou にも当てはまるかは未確認。
 - security の見直しをいつ、どの条件で行うか。③の懸念にどう答えるか。
-- ④ (model の進化で harness が不要になる) を診断から外してよいか。本人は選ばなかったが、探究では Anthropic 自身が component を 1 つずつ外すことを勧めている。
+- ④ (model の進化で harness が不要になる) を診断から外してよいか。本人は選ばなかったが、探究では Anthropic 自身が component を 1 つずつ外すことを勧めている。補足調査では、ある model で必要だった context reset が次の model では「dead weight」になった例も見つかっており (Lance Martin、2026-04-02)、外す前に再検討する材料がある。
 
 ## 10. 検証ログ
 
