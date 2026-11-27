@@ -9,7 +9,8 @@ dozou (個人の data platform) で作業する agent への入口である。
 1. `bash init.sh` を実行する。失敗したら、新しい作業の前に原因を直す。
    cache や git hooks の設定が原因で失敗したときは、cache の env を上書きして回避せず、作業を止めて人間に依頼する。これは Interventions に `permission` として記録する。
 2. `claude-progress.md` の最新の session を読み、前回の続きを把握する。
-3. `feature_list.json` を読み、扱う feature を 1 つ決める。
+3. `git log --oneline -5` を実行し、progress の記録と実際の commit がずれていないかを確かめる。
+4. `feature_list.json` を読み、扱う feature を 1 つ決める。
 
 ## プロジェクト構成
 
@@ -32,6 +33,8 @@ top-level の directory を追加・変更したら、この表も更新する�
 ## 作業の進め方
 
 - 1 session で扱う feature は 1 つにする。
+- 選んだ feature の範囲の外は変えない。blocker を外すための最小限の修正だけは許す。
+- test、pre-commit の check、spec の完了基準を、人間に断らずに削除・緩和・変更しない。
 - 設計と計画は superpowers の flow (spec → plan → 実装) に従う。
 - spec は人間が承認する。承認された spec の完了基準が、その feature の完了の定義になる。
 - spec を承認したら、`feature_list.json` に feature を追加するか、既存の entry に `spec` の path を書き、`status` を `in-progress` にする。
@@ -55,5 +58,5 @@ top-level の directory を追加・変更したら、この表も更新する�
 
 - `status` は `not-started`、`in-progress`、`pass`、`fail` のいずれかにする。
 - 詰まったら `status` を `fail` にし、`evidence` に理由を書く。
-- feature を削除しない。
+- 未完了を隠すために feature を削除したり、`status` や `evidence` を書き換えたりしない。
 - `pass` にできるのは、Definition of Done を満たしたときだけである。
