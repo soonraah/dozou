@@ -125,9 +125,9 @@ sandbox 内の command が、通常の shell と共有する cache を書き換�
 walkinglabs の session ログ形式に、介入の記録の欄を足す。
 1 session ごとに、次の項目を持つ entry を追記する。
 
-- `### Session N — YYYY-MM-DD`
+- `### YYYY-MM-DD — <branch 名>` (並行する worktree での連番の衝突を避けるため、連番にしない)
 - Feature: `feature_list.json` の id
-- Goal / What was done / Decisions / Issues / Next
+- Goal / What was done / Verification (実行した検証と結果) / Commits (短い hash) / Decisions / Issues / Next
 - Interventions: 人間の介入の一覧。各項目に種類 (`permission` / `decision` / `rework`) と内容を書く。無ければ `none`。
 
 Interventions は、日曜の振り返りで L2 の指標 (介入の回数と種類) を集計するために使う。
