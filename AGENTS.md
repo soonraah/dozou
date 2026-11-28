@@ -24,9 +24,12 @@ dozou (個人の data platform) で作業する agent への入口である。
 | `docs/superpowers/specs/` | feature ごとの設計 (spec)。完了基準はここに書く |
 | `docs/superpowers/plans/` | spec を実装する計画 |
 | `pyproject.toml` / `uv.lock` | Python の依存関係。uv で管理する |
+| `.tool-versions` | asdf で固定する CLI の version (uv など) |
 | `.pre-commit-config.yaml` | commit 時の check (Conventional Commits、black、flake8、pymarkdown) |
 | `.github/` | PR template |
 | `.claude/settings.json` | Claude Code の project 設定 (sandbox の書き込み許可など) |
+| `.mcp.json` | project の MCP server (`dlt`: dlt-mcp) の登録 |
+| `.dlt/` | dlt の設定。`secrets.toml` は commit せず、読まない |
 
 top-level の directory を追加・変更したら、この表も更新する。
 
@@ -38,6 +41,7 @@ top-level の directory を追加・変更したら、この表も更新する�
 - 設計と計画は superpowers の flow (spec → plan → 実装) に従う。
 - spec は人間が承認する。承認された spec の完了基準が、その feature の完了の定義になる。
 - spec を承認したら、`feature_list.json` に feature を追加するか、既存の entry に `spec` の path を書き、`status` を `in-progress` にする。
+- dlt の docs は、まず `dlt` MCP server の `search_docs` で引く。index は dlt 1.18.1 のものなので、見つからないときや API の細部は <https://dlthub.com/docs/llms.txt> から該当ページを読む。
 
 ## Definition of Done
 
