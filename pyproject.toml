@@ -15,8 +15,13 @@ package = false
 [dependency-groups]
 dev = [
     "black>=26.10.1",
+    # chonkie and lancedb are pinned only for dlt-mcp's search_docs.
+    # Newer versions fail with "Field 'metadata' not found in target schema".
+    "chonkie[code,model2vec]==1.4.2",
     "conventional-pre-commit>=4.5.0",
+    "dlt-mcp[search]>=0.3.0,<0.4",
     "flake8>=7.5.0",
+    "lancedb>=0.25.3,<0.26",  # see the chonkie comment above
     "pre-commit>=4.7.0",
     "pymarkdownlnt>=0.9.42",
     "pytest>=9.2.0",
