@@ -24,6 +24,7 @@ dozou (個人の data platform) で作業する agent への入口である。
 | `docs/superpowers/specs/` | feature ごとの設計 (spec)。完了基準はここに書く |
 | `docs/superpowers/plans/` | spec を実装する計画 |
 | `pyproject.toml` / `uv.lock` | Python の依存関係。uv で管理する |
+| `.tool-versions` | asdf で固定する CLI の version (uv など) |
 | `.pre-commit-config.yaml` | commit 時の check (Conventional Commits、black、flake8、pymarkdown) |
 | `.github/` | PR template |
 | `.claude/settings.json` | Claude Code の project 設定 (sandbox の書き込み許可など) |
