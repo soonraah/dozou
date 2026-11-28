@@ -10,6 +10,15 @@
       "status": "not-started",
       "evidence": null,
       "testedAt": null
+    },
+    {
+      "id": "agent-data-tooling",
+      "name": "Agent tooling for dlt and DuckDB",
+      "description": "dlt-mcp、llms.txt、duckdb-skills plugin を Claude Code から使えるようにする",
+      "spec": "docs/superpowers/specs/2026-11-27-agent-data-tooling-design.md",
+      "status": "in-progress",
+      "evidence": null,
+      "testedAt": null
     }
   ]
 }
