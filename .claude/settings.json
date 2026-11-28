@@ -1,7 +1,13 @@
 {
+  "enabledMcpjsonServers": [
+    "dlt"
+  ],
   "sandbox": {
     "filesystem": {
-      "allowWrite": ["~/.cache/uv", "~/.cache/pre-commit"]
+      "allowWrite": [
+        "~/.cache/uv",
+        "~/.cache/pre-commit"
+      ]
     }
   }
 }
