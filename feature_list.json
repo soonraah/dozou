@@ -16,9 +16,9 @@
       "name": "Agent tooling for dlt and DuckDB",
       "description": "dlt-mcp、llms.txt、duckdb-skills plugin を Claude Code から使えるようにする",
       "spec": "docs/superpowers/specs/2026-11-27-agent-data-tooling-design.md",
-      "status": "in-progress",
-      "evidence": null,
-      "testedAt": null
+      "status": "pass",
+      "evidence": "1: `bash init.sh` exit 0. 2: `uv tree --frozen | grep -c dlthub` = 0. 3: new session, `/mcp` shows `dlt` connected (human), `mcp__dlt__list_pipelines` returned [from_database, money_forward, quick_start], `mcp__dlt__search_docs(query=\"read_csv encoding\")` returned 3 hits (file-formats/csv.md, verified-sources/filesystem/basic.md). 4: new session listed 9 duckdb-skills skills; `read-file` on a 3-row Shift_JIS sample CSV failed as non-UTF-8 with the skill's default `read_csv`, then succeeded via its fallback `read_csv(path, encoding='shift_jis')` with DuckDB CLI v2.0.1: columns 日付 DATE, 内容 VARCHAR, 金額 BIGINT, row_count 3. 5: `python3 -m json.tool` passes for .mcp.json and feature_list.json.",
+      "testedAt": "2026-11-28T23:42:20+09:00"
     }
   ]
 }
